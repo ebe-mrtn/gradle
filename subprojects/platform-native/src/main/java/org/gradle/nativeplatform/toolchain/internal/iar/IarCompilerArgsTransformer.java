@@ -1,5 +1,5 @@
 /*
- * Copyright 2013 the original author or authors.
+ * Copyright 2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.gradle.nativeplatform.toolchain.internal.gcc;
+package org.gradle.nativeplatform.toolchain.internal.iar;
 
 import com.google.common.collect.Lists;
 import org.gradle.nativeplatform.platform.NativePlatform;
@@ -29,17 +29,18 @@ import java.util.List;
 /**
  * Maps common options for C/C++ compiling with GCC
  */
-abstract class GccCompilerArgsTransformer<T extends NativeCompileSpec> implements ArgsTransformer<T> {
+abstract class IarCompilerArgsTransformer<T extends NativeCompileSpec> implements ArgsTransformer<T> {
     @Override
     public List<String> transform(T spec) {
         List<String> args = Lists.newArrayList();
-        addToolSpecificArgs(spec, args);
+        // addToolSpecificArgs(spec, args);
         addMacroArgs(spec, args);
         addUserArgs(spec, args);
         addIncludeArgs(spec, args);
         return args;
     }
 
+    /*
     protected void addToolSpecificArgs(T spec, List<String> args) {
         Collections.addAll(args, "-x", getLanguage());
         args.add("-c");
@@ -55,23 +56,16 @@ abstract class GccCompilerArgsTransformer<T extends NativeCompileSpec> implement
             args.add("-O3");
         }
     }
+    */
 
     protected void addIncludeArgs(T spec, List<String> args) {
-        if (!needsStandardIncludes(spec.getTargetPlatform())) {
-            args.add("-nostdinc");
-        }
-
         for (File file : spec.getIncludeRoots()) {
-            args.add("-I");
-            args.add(file.getAbsolutePath());
+            args.add("-I" + file.getAbsolutePath());
         }
 
-        /*
         for (File file : spec.getSystemIncludeRoots()) {
-            args.add("-isystem");
-            args.add(file.getAbsolutePath());
+            args.add("-I" + args.add(file.getAbsolutePath()));
         }
-        */
     }
 
     protected void addMacroArgs(T spec, List<String> args) {
@@ -82,10 +76,6 @@ abstract class GccCompilerArgsTransformer<T extends NativeCompileSpec> implement
 
     protected void addUserArgs(T spec, List<String> args) {
         args.addAll(spec.getAllArgs());
-    }
-
-    protected boolean needsStandardIncludes(NativePlatform targetPlatform) {
-        return targetPlatform.getOperatingSystem().isMacOsX();
     }
 
     protected abstract String getLanguage();

@@ -19,6 +19,8 @@ package org.gradle.nativeplatform.toolchain.internal.metadata;
 import org.gradle.api.Action;
 import org.gradle.nativeplatform.toolchain.internal.gcc.metadata.GccMetadata;
 import org.gradle.nativeplatform.toolchain.internal.gcc.metadata.GccMetadataProvider;
+import org.gradle.nativeplatform.toolchain.internal.iar.metadata.IarMetadata;
+import org.gradle.nativeplatform.toolchain.internal.iar.metadata.IarMetadataProvider;
 import org.gradle.nativeplatform.toolchain.internal.swift.metadata.SwiftcMetadata;
 import org.gradle.nativeplatform.toolchain.internal.swift.metadata.SwiftcMetadataProvider;
 import org.gradle.platform.base.internal.toolchain.SearchResult;
@@ -30,14 +32,20 @@ import java.util.List;
 import java.util.Map;
 
 public class CompilerMetaDataProviderFactory {
+    private final CachingCompilerMetaDataProvider<IarMetadata> iar;
     private final CachingCompilerMetaDataProvider<GccMetadata> gcc;
     private final CachingCompilerMetaDataProvider<GccMetadata> clang;
     private final CachingCompilerMetaDataProvider<SwiftcMetadata> swiftc;
 
     public CompilerMetaDataProviderFactory(ExecActionFactory execActionFactory) {
+        iar = new CachingCompilerMetaDataProvider<IarMetadata>(new IarMetadataProvider(execActionFactory));
         gcc = new CachingCompilerMetaDataProvider<GccMetadata>(GccMetadataProvider.forGcc(execActionFactory));
         clang = new CachingCompilerMetaDataProvider<GccMetadata>(GccMetadataProvider.forClang(execActionFactory));
         swiftc = new CachingCompilerMetaDataProvider<SwiftcMetadata>(new SwiftcMetadataProvider(execActionFactory));
+    }
+
+    public CompilerMetaDataProvider<IarMetadata> iar() {
+        return iar;
     }
 
     public CompilerMetaDataProvider<GccMetadata> gcc() {

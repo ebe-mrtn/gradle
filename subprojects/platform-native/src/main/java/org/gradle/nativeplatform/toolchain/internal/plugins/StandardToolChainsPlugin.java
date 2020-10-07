@@ -20,6 +20,7 @@ import org.gradle.api.Plugin;
 import org.gradle.api.Project;
 import org.gradle.nativeplatform.toolchain.plugins.ClangCompilerPlugin;
 import org.gradle.nativeplatform.toolchain.plugins.GccCompilerPlugin;
+import org.gradle.nativeplatform.toolchain.plugins.IarCompilerPlugin;
 import org.gradle.nativeplatform.toolchain.plugins.MicrosoftVisualCppCompilerPlugin;
 
 /**
@@ -31,5 +32,6 @@ public class StandardToolChainsPlugin implements Plugin<Project> {
         project.getPluginManager().apply(MicrosoftVisualCppCompilerPlugin.class);
         project.getPluginManager().apply(GccCompilerPlugin.class);
         project.getPluginManager().apply(ClangCompilerPlugin.class);
+        project.getPluginManager().apply(IarCompilerPlugin.class);
     }
 }

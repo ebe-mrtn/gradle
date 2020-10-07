@@ -1,5 +1,5 @@
 /*
- * Copyright 2013 the original author or authors.
+ * Copyright 2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.gradle.nativeplatform.toolchain.internal.gcc;
+package org.gradle.nativeplatform.toolchain.internal.iar;
 
 import org.gradle.api.Action;
 import org.gradle.api.GradleException;
@@ -39,9 +39,10 @@ import java.util.List;
 /**
  * A static library archiver based on the GNU 'ar' utility
  */
-public class ArStaticLibraryArchiver extends AbstractCompiler<StaticLibraryArchiverSpec> {
-    public ArStaticLibraryArchiver(BuildOperationExecutor buildOperationExecutor, CommandLineToolInvocationWorker commandLineToolInvocationWorker, CommandLineToolContext invocationContext, WorkerLeaseService workerLeaseService) {
+public class StaticArchiver extends AbstractCompiler<StaticLibraryArchiverSpec> {
+    public StaticArchiver(BuildOperationExecutor buildOperationExecutor, CommandLineToolInvocationWorker commandLineToolInvocationWorker, CommandLineToolContext invocationContext, WorkerLeaseService workerLeaseService) {
         super(buildOperationExecutor, commandLineToolInvocationWorker, invocationContext, new ArchiverSpecToArguments(), false, workerLeaseService);
+
     }
 
     @Override
@@ -63,10 +64,16 @@ public class ArStaticLibraryArchiver extends AbstractCompiler<StaticLibraryArchi
 
     @Override
     protected Action<BuildOperationQueue<CommandLineToolInvocation>> newInvocationAction(final StaticLibraryArchiverSpec spec, List<String> args) {
+
         File workDir = CommonPath.commonPath(spec.getObjectFiles());
 
         final CommandLineToolInvocation invocation = newInvocation(
-            "archiving " + spec.getOutputFile().getName(), workDir, args, spec.getOperationLogger());
+            "archiving " + spec.getOutputFile().getName(),      // name
+            // spec.getOutputFile().getParentFile(),                  // working dir
+            workDir,
+            args,                                                     // arguments
+            spec.getOperationLogger());                               // logger
+
 
         return new Action<BuildOperationQueue<CommandLineToolInvocation>>() {
             @Override
@@ -86,20 +93,20 @@ public class ArStaticLibraryArchiver extends AbstractCompiler<StaticLibraryArchi
         @Override
         public List<String> transform(StaticLibraryArchiverSpec spec) {
             List<String> args = new ArrayList<String>();
-            // -r : Add files to static archive, creating if required
-            // -c : Don't write message to standard error when creating archive
-            // -s : Create an object file index (equivalent to running 'ranlib')
-            args.add("-rcs");
+            // --create: create archive
+            args.add("--create");
             args.addAll(spec.getAllArgs());
-            args.add(spec.getOutputFile().getAbsolutePath());
-
+            // with following objects
+            // Path outfilePath = Paths.get(spec.getOutputFile().getAbsolutePath());
             File workDir = CommonPath.commonPath(spec.getObjectFiles());
             Path outfilePath = Paths.get(workDir.getAbsolutePath());
-
             for (File file : spec.getObjectFiles()) {
                 Path filePath = Paths.get(file.getAbsolutePath());
                 args.add(outfilePath.relativize(filePath).toString());
             }
+            // -o: to following lib
+            args.add("-o");
+            args.add(spec.getOutputFile().getAbsolutePath());
             return args;
         }
     }
