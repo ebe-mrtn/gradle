@@ -63,6 +63,8 @@ public class ArStaticLibraryArchiver extends AbstractCompiler<StaticLibraryArchi
 
     @Override
     protected Action<BuildOperationQueue<CommandLineToolInvocation>> newInvocationAction(final StaticLibraryArchiverSpec spec, List<String> args) {
+        // archiving only works, if common path of all object files to be archived
+        // is base path to command!
         File workDir = CommonPath.commonPath(spec.getObjectFiles());
 
         final CommandLineToolInvocation invocation = newInvocation(
@@ -93,6 +95,8 @@ public class ArStaticLibraryArchiver extends AbstractCompiler<StaticLibraryArchi
             args.addAll(spec.getAllArgs());
             args.add(spec.getOutputFile().getAbsolutePath());
 
+            // archiving only works, if common path of all object files to be archived
+            // is base path to command!
             File workDir = CommonPath.commonPath(spec.getObjectFiles());
             Path outfilePath = Paths.get(workDir.getAbsolutePath());
 

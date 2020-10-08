@@ -32,7 +32,6 @@ import org.gradle.nativeplatform.toolchain.IarPlatformToolChain;
 import org.gradle.nativeplatform.toolchain.NativePlatformToolChain;
 import org.gradle.nativeplatform.toolchain.internal.metadata.CompilerMetaDataProviderFactory;
 import org.gradle.nativeplatform.toolchain.internal.ExtendableToolChain;
-import org.gradle.nativeplatform.toolchain.internal.TargetPlatformConfiguration;
 import org.gradle.nativeplatform.toolchain.internal.NativeLanguage;
 import org.gradle.nativeplatform.toolchain.internal.PlatformToolProvider;
 import org.gradle.nativeplatform.toolchain.internal.ToolType;
